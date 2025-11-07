@@ -1,0 +1,26 @@
+name: Build and Push Angular Docker Image
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Primer paso: Descargar el código del repositorio
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Segundo paso: Loguearse en Docker Hub
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      # Tercer paso: Construir la imagen
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/angular-example:latest .
+
+      # Cuarto paso: Subir la imagen al registry
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/angular-example:latest
